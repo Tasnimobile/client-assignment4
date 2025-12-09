@@ -1,0 +1,88 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# production
+/build
+
+# misc
+.DS_Store
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# editor directories and files
+.vscode/
+.idea/
+
+# logs
+logs
+*.log
+
+# cache
+.cache
+
+# optional npm cache
+.npm
+
+# Mac files
+*.DS_Store
+
+# local env files
+.local
+
+# parcel-bundler cache
+.cache/
+
+# SvelteKit, Next, etc (not used but safe)
+.next
+
+# Build output
+dist/
+
+# service worker
+service-worker.js
+
+# dotenv
+.env.*.local
+
+# Ignore node-sass cache
+.sass-cache
+
+# Ignore lock files? Usually keep package-lock.json, so do not ignore it
+
+# Node deps and build
+/node_modules
+/build
+
+# Local env
+.env
+.env.local
+.env.*.local
+
+# Editor/IDE
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# Logs / caches
+npm-debug.log*
+yarn-error.log*
+logs
+.cache
+coverage
+
+# Others
+dist/
+service-worker.js
