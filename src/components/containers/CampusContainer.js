@@ -8,7 +8,7 @@ If needed, it also defines the component's "connect" function.
 import Header from './Header';
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { fetchCampusThunk } from "../../store/thunks";
+import { fetchCampusThunk, editCampusThunk, deleteCampusThunk, fetchAllStudentsThunk, addStudentThunk, editStudentThunk, deleteStudentThunk } from "../../store/thunks";
 
 import { CampusView } from "../views";
 
@@ -36,6 +36,7 @@ class CampusContainer extends Component {
 const mapState = (state) => {
   return {
     campus: state.campus,  // Get the State object from Reducer "campus"
+    allStudents: state.allStudents,
   };
 };
 // 2. The "mapDispatch" argument is used to dispatch Action (Redux Thunk) to Redux Store.
@@ -43,6 +44,13 @@ const mapState = (state) => {
 const mapDispatch = (dispatch) => {
   return {
     fetchCampus: (id) => dispatch(fetchCampusThunk(id)),
+    editCampus: (campus) => dispatch(editCampusThunk(campus)),
+    deleteCampus: (id) => dispatch(deleteCampusThunk(id)),
+    addStudent: (student) => dispatch(addStudentThunk(student)),
+    editStudent: (student) => dispatch(editStudentThunk(student)),
+    deleteStudent: (id) => dispatch(deleteStudentThunk(id)),
+    fetchAllStudents: () => dispatch(fetchAllStudentsThunk()),
+    
   };
 };
 
