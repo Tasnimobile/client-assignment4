@@ -21,31 +21,99 @@ const CampusView = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Debug: log when campus prop changes to help diagnose refresh issues
+  useEffect(() => {
+    console.log('CampusView: campus prop updated', props.campus);
+  }, [props.campus]);
+
   if (!campus) return <div>Loading campus...</div>;
 
-  const handleRemoveStudent = (student) => {
-    if (window.confirm(`Remove ${student.firstname} ${student.lastname} from this campus?`)) {
-      // If you want to only unassign (not delete), call editStudent with campusId null
-      if (props.editStudent) {
-        props.editStudent({ ...student, campusId: null });
-      } else if (props.deleteStudent) {
-        // fallback: delete the student entirely if edit isn't available
-        props.deleteStudent(student.id);
-      } else {
-        console.warn('No editStudent or deleteStudent prop provided');
+  // const handleRemoveStudent = (student) => {
+  //   if (window.confirm(`Remove ${student.firstname} ${student.lastname} from this campus?`)) {
+  //     // If you want to only unassign (not delete), call editStudent with campusId null
+  //     if (props.editStudent) {
+  //       props.editStudent({ ...student, campusId: null });
+  //     } else if (props.deleteStudent) {
+  //       // fallback: delete the student entirely if edit isn't available
+  //       props.deleteStudent(student.id);
+  //     } else {
+  //       console.warn('No editStudent or deleteStudent prop provided');
+  //     }
+  //   }
+  // };
+  const handleRemoveStudent = async (student) => {
+    if (!window.confirm(`Remove ${student.firstname} ${student.lastname} from this campus?`)) return;
+
+    // Prefer unassign (edit student -> campusId: null). If editStudent not available, fallback to deleteStudent.
+    if (props.editStudent) {
+      try {
+        console.log('CampusView: unassigning student', student.id, 'from campus', campus.id);
+        await props.editStudent({ ...student, campusId: null });
+        console.log('CampusView: editStudent resolved for unassign');
+        if (props.fetchCampus) {
+          const refreshed = await props.fetchCampus(campus.id);
+          console.log('CampusView: fetchCampus result after unassign', refreshed);
+        } else if (props.fetchAllStudents) {
+          const refreshedAll = await props.fetchAllStudents();
+          console.log('CampusView: fetchAllStudents result after unassign', refreshedAll);
+        }
+      } catch (err) {
+        console.error('Unassign student failed:', err);
       }
+    } else if (props.deleteStudent) {
+      try {
+        await props.deleteStudent(student.id);
+        if (props.fetchCampus) {
+          await props.fetchCampus(campus.id);
+        } else if (props.fetchAllStudents) {
+          await props.fetchAllStudents();
+        }
+      } catch (err) {
+        console.error('Delete student failed:', err);
+      }
+    } else {
+      console.warn('No editStudent or deleteStudent prop provided');
     }
   };
 
-  const handleAssignExisting = () => {
+  // const handleAssignExisting = () => {
+  //   if (!selectedStudentId) return;
+  //   const id = parseInt(selectedStudentId, 10);
+  //   const studentObj = (props.allStudents || []).find(s => s.id === id);
+  //   if (!studentObj) return;
+  //   // assign student to this campus
+  //   if (props.editStudent) {
+  //     props.editStudent({ ...studentObj, campusId: campus.id });
+  //     setSelectedStudentId("");
+  //   } else {
+  //     console.warn('editStudent prop not provided');
+  //   }
+  // };
+  const handleAssignExisting = async () => {
     if (!selectedStudentId) return;
     const id = parseInt(selectedStudentId, 10);
     const studentObj = (props.allStudents || []).find(s => s.id === id);
     if (!studentObj) return;
-    // assign student to this campus
+
     if (props.editStudent) {
-      props.editStudent({ ...studentObj, campusId: campus.id });
-      setSelectedStudentId("");
+      try {
+        console.log('CampusView: assigning student', studentObj.id, 'to campus', campus.id);
+        // update server
+        await props.editStudent({ ...studentObj, campusId: campus.id });
+        console.log('CampusView: editStudent resolved for assign');
+        // re-fetch campus so campus.students is updated in the store and view
+        if (props.fetchCampus) {
+          const refreshed = await props.fetchCampus(campus.id);
+          console.log('CampusView: fetchCampus result after assign', refreshed);
+        } else if (props.fetchAllStudents) {
+          // fallback: refresh all students list if single-campus fetch not available
+          const refreshedAll = await props.fetchAllStudents();
+          console.log('CampusView: fetchAllStudents result after assign', refreshedAll);
+        }
+        setSelectedStudentId("");
+      } catch (err) {
+        console.error('Assign student failed:', err);
+      }
     } else {
       console.warn('editStudent prop not provided');
     }

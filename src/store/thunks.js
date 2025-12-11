@@ -40,6 +40,7 @@ export const fetchCampusThunk = (id) => async (dispatch) => {  // The THUNK
     // API "get" call to get a student data (based on "id")from database
     let res = await axios.get(`/api/campuses/${id}`);  
     dispatch(ac.fetchCampus(res.data));
+    return res.data;
   } catch(err) {
     console.error(err);
   }
@@ -119,9 +120,10 @@ export const deleteStudentThunk = studentId => async dispatch => {  // The THUNK
 export const editStudentThunk = student => async dispatch => {  // The THUNK
   try {
     // API "put" call to update student (based on "id" and "student" object's data) from database
-    let updatedStudent = await axios.put(`/api/students/${student.id}`, student); 
-    // Update successful so change state with dispatch
-    dispatch(ac.editStudent(updatedStudent));
+    let res = await axios.put(`/api/students/${student.id}`, student); 
+    // Update successful so change state with dispatch (use server-returned student object)
+    dispatch(ac.editStudent(res.data));
+    return res.data;
   } catch(err) {
     console.error(err);
   }
