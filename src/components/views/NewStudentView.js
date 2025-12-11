@@ -69,6 +69,11 @@ const NewStudentView = (props) => {
             <Button variant="contained" color="primary" type="submit">
               Submit
             </Button>
+            {props.errorMessage && (
+              <div style={{ color: 'red', marginTop: '10px' }}>
+                {props.errorMessage}
+              </div>
+            )}
             <br/>
             <br/>
           </form>

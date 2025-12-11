@@ -95,8 +95,9 @@ export const addStudentThunk = (student) => async (dispatch) => {  // The THUNK
     // Then dispatch the Action object to Reducer to update state 
     dispatch(ac.addStudent(res.data));
     return res.data;
-  } catch(err) {
+  } catch (err) {
     console.error(err);
+    throw err;  // Rethrow the error to be handled in the calling function
   }
 };
 

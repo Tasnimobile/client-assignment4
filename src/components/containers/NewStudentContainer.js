@@ -22,7 +22,8 @@ class NewStudentContainer extends Component {
       lastname: "", 
       campusId: null, 
       redirect: false, 
-      redirectId: null
+      redirectId: null,
+      errorMessage: null
     };
   }
 
@@ -43,24 +44,48 @@ class NewStudentContainer extends Component {
         campusId: this.state.campusId
     };
     
-    // Add new student in back-end database
-    let newStudent = await this.props.addStudent(student);
+    try {
+      // Add new student in back-end database
+      let newStudent = await this.props.addStudent(student);
 
-    // Update state, and trigger redirect to show the new student
-    this.setState({
-      firstname: "", 
-      lastname: "", 
-      campusId: null, 
-      redirect: true, 
-      redirectId: newStudent.id
-    });
+      if (newStudent && newStudent.id) {
+        // Update state, and trigger redirect to show the new student
+        this.setState({
+          firstname: "",
+          lastname: "",
+          campusId: null,
+          redirect: true,
+          redirectId: newStudent.id,
+          errorMessage: null
+        });
+      } else {
+        console.error("Failed to add student:", newStudent);
+        // Handle error (e.g., show an error message)
+        this.setState({
+          redirect: false,
+          redirectId: null,
+          errorMessage: 'Unable to add student. Please check the input and try again.'
+        });
+      }
+    } catch (error) {
+      console.error("Error adding student:", error);
+      // Handle error (e.g., show an error message)
+      // Log server-provided message for debugging, but show a friendly message to the user
+      const serverMessage = error?.response?.data?.error ?? error?.response?.data?.message ?? null;
+      if (serverMessage) console.error('Server message:', serverMessage);
+      this.setState({
+        redirect: false,
+        redirectId: null,
+        errorMessage: 'Unable to add student. Please check the input and try again.'
+      });
+    }
   }
 
   // Unmount when the component is being removed from the DOM:
+  // Unmount when the component is being removed from the DOM:
   componentWillUnmount() {
-      this.setState({redirect: false, redirectId: null});
+      // Do not call setState on unmount; no cleanup required here.
   }
-
   // Render new student input form
   render() {
     // Redirect to new student's page after submit
@@ -74,7 +99,8 @@ class NewStudentContainer extends Component {
         <Header />
         <NewStudentView 
           handleChange = {this.handleChange} 
-          handleSubmit={this.handleSubmit}      
+          handleSubmit={this.handleSubmit}  
+          errorMessage={this.state.errorMessage}
         />
       </div>          
     );
