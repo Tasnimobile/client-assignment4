@@ -23,7 +23,10 @@ class NewStudentContainer extends Component {
       campusId: null, 
       redirect: false, 
       redirectId: null,
-      errorMessage: null
+      errorMessage: null,
+      email: "",
+      gpa: "",
+      imageurl: ""
     };
   }
 
@@ -41,8 +44,84 @@ class NewStudentContainer extends Component {
     let student = {
         firstname: this.state.firstname,
         lastname: this.state.lastname,
-        campusId: this.state.campusId
+        campusId: this.state.campusId,
+        email: this.state.email,
+        gpa: this.state.gpa,
+        imageurl: this.state.imageurl
     };
+
+    // Validate email
+    const email = this.state.email;
+    if (email) {
+      const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRe.test(email)) {
+        this.setState({
+          redirect: false,
+          redirectId: null,
+          errorMessage: 'Please enter a valid email address.'
+        });
+        return;
+      }
+    }
+
+    // Validate GPA
+    let payloadGpa = null;
+    const rawGpa = this.state.gpa;
+
+    // allow blank -> null
+    if (rawGpa !== "" && rawGpa != null) {
+      const n = Number(rawGpa);
+      if (Number.isNaN(n) || n < 0 || n > 4) {
+        this.setState({
+          redirect: false,
+          redirectId: null,
+          errorMessage: 'GPA must be a number between 0.0 and 4.0.'
+        });
+        return;
+      }
+      // round to 2 decimals
+      payloadGpa = Math.round(n * 100) / 100;
+    }
+
+    //validate imageurl
+    let payloadImage = null;
+    const rawImage = this.state.imageurl;
+    if (rawImage && rawImage !== "") {
+      try {
+        // will throw if invalid
+        new URL(rawImage);
+        payloadImage = rawImage;
+      } catch (err) {
+        this.setState({
+          redirect: false,
+          redirectId: null,
+          errorMessage: 'Please enter a valid image URL.'
+        });
+        return;
+      }
+    } else {
+      payloadImage = null; // explicit null so backend receives the field
+    }
+
+    //validate campusid
+    let payloadCampusId = null;
+    const rawCampusId = this.state.campusId;
+    if (rawCampusId && rawCampusId !== "") {
+      const n = Number(rawCampusId);
+      if (Number.isNaN(n) || !Number.isInteger(n) || n < 1) {
+        this.setState({
+          redirect: false,
+          redirectId: null,
+          errorMessage: 'Campus ID must be a positive integer.'
+        });
+        return;
+      }
+      payloadCampusId = n;
+    } else {
+      payloadCampusId = null; // allow blank -> null
+    }
+
+
     
     try {
       // Add new student in back-end database
@@ -101,6 +180,7 @@ class NewStudentContainer extends Component {
           handleChange = {this.handleChange} 
           handleSubmit={this.handleSubmit}  
           errorMessage={this.state.errorMessage}
+          imageurl={this.state.imageurl}
         />
       </div>          
     );
