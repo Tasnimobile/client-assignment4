@@ -13,6 +13,7 @@ const CampusView = (props) => {
   const { campus } = props;
   const history = useHistory();
   const [selectedStudentId, setSelectedStudentId] = useState("");
+  const PLACEHOLDER = "https://via.placeholder.com/300x200?text=No+Image";
 
   // If container provided a fetchAllStudents function (for assigning existing students), call it once
   useEffect(() => {
@@ -84,6 +85,16 @@ const CampusView = (props) => {
             );
           })
         )}
+      </div>
+
+      <div style={{ display: "flex", gap: 16, alignItems: "center", justifyContent: "center", marginTop: 20 }}>
+        <img
+          src={campus.imageurl || PLACEHOLDER}
+          alt={`${campus.name} `}
+          style={{ width: 300, height: 200, objectFit: "cover", borderRadius: 6 }}
+          onError={(e) => { e.target.onerror = null; e.target.src = PLACEHOLDER; }}
+          loading="lazy"
+        />
       </div>
 
       <br />
