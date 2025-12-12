@@ -45,22 +45,28 @@ const EditStudentView = ({ student, editStudent }) => {
       <h1>Edit Student</h1>
 
       <form onSubmit={handleSubmit}>
+        <label>First Name:</label>
         <input value={firstname} onChange={(e) => setFirstname(e.target.value)} placeholder="First Name" />
         <br /><br />
 
+        <label>Last Name:</label>
         <input value={lastname} onChange={(e) => setLastname(e.target.value)} placeholder="Last Name" />
         <br /><br />
 
+        <label>Email:</label>
         <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
         <br /><br />
 
+        <label>GPA:</label>
         <input type="number" step="0.01" min="0" max="4"
           value={gpa} onChange={(e) => setGpa(e.target.value)} placeholder="GPA" />
         <br /><br />
 
+        <label>Campus ID:</label>
         <input value={campusId} onChange={(e) => setCampusId(e.target.value)} placeholder="Campus ID" />
         <br /><br />
 
+        <label>Image URL:</label>
         <input value={imageurl} onChange={(e) => setImageurl(e.target.value)} placeholder="Image URL" />
         <br /><br />
 

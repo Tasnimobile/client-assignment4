@@ -50,7 +50,7 @@ const EditCampusView = ({ campus, editCampus }) => {
           <textarea value={description} onChange={e => setDescription(e.target.value)} />
         </div>
         <div>
-          <label style={{ fontWeight: "bold" }}>Image URL</label>
+          <label>Image URL</label>
           <input
             type="text"
             value={imageurl}
